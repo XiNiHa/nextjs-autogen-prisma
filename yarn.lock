@@ -298,6 +298,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@prisma/client@npm:4.2.0":
+  version: 4.2.0
+  resolution: "@prisma/client@npm:4.2.0"
+  dependencies:
+    "@prisma/engines-version": 4.2.0-33.2920a97877e12e055c1333079b8d19cee7f33826
+  peerDependencies:
+    prisma: "*"
+  peerDependenciesMeta:
+    prisma:
+      optional: true
+  checksum: 37afb11bfd91584ea266f0b475bff017b1fa4e6b87b95de35dfe158194e266d3167e7531c5acd2cd59b46d9d04c16aba501a49c5ad19649e911226a96fa674da
+  languageName: node
+  linkType: hard
+
+"@prisma/engines-version@npm:4.2.0-33.2920a97877e12e055c1333079b8d19cee7f33826":
+  version: 4.2.0-33.2920a97877e12e055c1333079b8d19cee7f33826
+  resolution: "@prisma/engines-version@npm:4.2.0-33.2920a97877e12e055c1333079b8d19cee7f33826"
+  checksum: 65975c69a361b56a85cf3652c8d7aec7549abe574158e423a64bc0be4bee83fe72ac2abd60133f776f3d410f97e7dc8c5dc516791ec963703cc6f914d378efc4
+  languageName: node
+  linkType: hard
+
 "@prisma/engines@npm:4.2.0":
   version: 4.2.0
   resolution: "@prisma/engines@npm:4.2.0"
@@ -3184,6 +3205,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "nextjs-tailwindcss-template@workspace:."
   dependencies:
+    "@prisma/client": 4.2.0
     "@types/node": 17.0.23
     "@types/react": 17.0.43
     "@types/react-dom": 17.0.14
