@@ -77,6 +77,7 @@ export default async function makeAPIFromPrismaModel(req: NextApiRequest, res: N
       const response = await prisma[table][action]();
       return res.status(201).json(response);
     }
+    // delete action, must have where field
     case "delete": {
       if (!target) return res.status(404).end();
       if (req.method !== "DELETE") return res.status(405).end();
@@ -85,6 +86,7 @@ export default async function makeAPIFromPrismaModel(req: NextApiRequest, res: N
       const response = await prisma[table][action](req.body);
       return res.status(200).json(response);
     }
+    // create many action, data must be array
     case "createMany": {
       if (req.method !== "POST") return res.status(405).end();
 
@@ -92,6 +94,7 @@ export default async function makeAPIFromPrismaModel(req: NextApiRequest, res: N
       const response = await prisma[table][action](req.body);
       return res.status(201).json(response);
     }
+    // findmany action, must have where field
     case "findMany": {
       if (req.method !== "POST") return res.status(405).end();
 
@@ -99,6 +102,7 @@ export default async function makeAPIFromPrismaModel(req: NextApiRequest, res: N
       const response = await prisma[table][action](req.body);
       return res.status(201).json(response);
     }
+    // deletemany action, must have where, data field
     case "updateMany": {
       if (req.method !== "PUT") return res.status(405).end();
 
@@ -106,6 +110,7 @@ export default async function makeAPIFromPrismaModel(req: NextApiRequest, res: N
       const response = await prisma[table][action](req.body);
       return res.status(200).json(response);
     }
+    // deletemany action, must have where, data field
     case "deleteMany": {
       if (req.method !== "DELETE") return res.status(405).end();
 
