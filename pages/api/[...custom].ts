@@ -48,11 +48,11 @@ export default async function makeAPIFromPrismaModel(req: NextApiRequest, res: N
     return res.status(404).end();
   }
 
-  function prismaAction(method: Method, status: 200 | 201 | 202 | 203 | 204 | 205 | 206) {
+  function query(method: Method, status: 200 | 201 | 202 | 203 | 204 | 205 | 206) {
     if (req.method !== method) return res.status(405).end();
 
     // @ts-ignore
-    const response = await prisma[table][prismaAction](req.body);
+    const response = await prisma[table][response](req.body);
     return res.status(status).json(response);
   }
 
@@ -60,32 +60,32 @@ export default async function makeAPIFromPrismaModel(req: NextApiRequest, res: N
   switch (action) {
     // create action, must have data field
     case "create":
-      return prismaAction("POST", 201);
+      return query("POST", 201);
     // find one Action, must have where field
     case "findUnique":
     case "findFirst":
-      return prismaAction("POST", 200);
+      return query("POST", 200);
     // update action, must have where and data field
     case "update":
-      return prismaAction("PUT", 205);
+      return query("PUT", 205);
     // delete action, must have where field
     case "delete":
-      return prismaAction("DELETE", 204);
+      return query("DELETE", 204);
 
     // --- many action ---
 
     // create many action, data must be array
     case "createMany":
-      return prismaAction("POST", 201);
+      return query("POST", 201);
     // findmany action, must have where field
     case "findMany":
-      return prismaAction("POST", 200);
+      return query("POST", 200);
     // deletemany action, must have where, data field
     case "updateMany":
-      return prismaAction("PUT", 205);
+      return query("PUT", 205);
     // deletemany action, must have where, data field
     case "deleteMany":
-      return prismaAction("DELETE", 204);
+      return query("DELETE", 204);
     default: {
       return res.status(405).end();
     }
