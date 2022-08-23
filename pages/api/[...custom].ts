@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 import { DMMFClass } from "@prisma/client/runtime";
+import { Method } from "axios";
 
 function getDatabaseName(name: string) {
   return `${name[0].toLowerCase()}${name.slice(1)}`;
@@ -48,76 +49,44 @@ export default async function makeAPIFromPrismaModel(req: NextApiRequest, res: N
     return res.status(404).end();
   }
 
+  function prismaAction(method: Method, status: 200 | 201 | 202 | 203 | 204 | 205 | 206) {
+    if (req.method !== method) return res.status(405).end();
+
+    // @ts-ignore
+    const response = await prisma[table][prismaAction](req.body);
+    return res.status(status).json(response);
+  }
+
   // do some logic with action
   switch (action) {
     // create action, must have data field
-    case "create": {
-      if (req.method !== "POST") return res.status(405).end();
-
-      // @ts-ignore
-      const response = await prisma[table][action](req.body);
-      return res.status(200).json(response);
-    }
+    case "create":
+      return prismaAction("POST", 201);
     // find one Action, must have where field
     case "findUnique":
-    case "findFirst": {
-      if (!target) return res.status(404).end();
-      if (req.method !== "POST") return res.status(405).end();
-
-      // @ts-ignore
-      const response = await prisma[table][action](req.body);
-      return res.status(200).json(response);
-    }
+    case "findFirst":
+      return prismaAction("POST", 200);
     // update action, must have where and data field
-    case "update": {
-      if (!target) return res.status(404).end();
-      if (req.method !== "PUT") return res.status(405).end();
-
-      // @ts-ignore
-      const response = await prisma[table][action]();
-      return res.status(201).json(response);
-    }
+    case "update":
+      return prismaAction("PUT", 205);
     // delete action, must have where field
-    case "delete": {
-      if (!target) return res.status(404).end();
-      if (req.method !== "DELETE") return res.status(405).end();
+    case "delete":
+      return prismaAction("DELETE", 204);
 
-      // @ts-ignore
-      const response = await prisma[table][action](req.body);
-      return res.status(200).json(response);
-    }
+    // --- many action ---
+
     // create many action, data must be array
-    case "createMany": {
-      if (req.method !== "POST") return res.status(405).end();
-
-      // @ts-ignore
-      const response = await prisma[table][action](req.body);
-      return res.status(201).json(response);
-    }
+    case "createMany":
+      return prismaAction("POST", 201);
     // findmany action, must have where field
-    case "findMany": {
-      if (req.method !== "POST") return res.status(405).end();
-
-      // @ts-ignore
-      const response = await prisma[table][action](req.body);
-      return res.status(201).json(response);
-    }
+    case "findMany":
+      return prismaAction("POST", 200);
     // deletemany action, must have where, data field
-    case "updateMany": {
-      if (req.method !== "PUT") return res.status(405).end();
-
-      // @ts-ignore
-      const response = await prisma[table][action](req.body);
-      return res.status(200).json(response);
-    }
+    case "updateMany":
+      return prismaAction("PUT", 205);
     // deletemany action, must have where, data field
-    case "deleteMany": {
-      if (req.method !== "DELETE") return res.status(405).end();
-
-      // @ts-ignore
-      const response = await prisma[table][action](req.body);
-      return res.status(200).json(response);
-    }
+    case "deleteMany":
+      return prismaAction("DELETE", 204);
     default: {
       return res.status(405).end();
     }
