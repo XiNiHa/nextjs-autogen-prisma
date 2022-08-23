@@ -39,8 +39,6 @@ export default async function makeAPIFromPrismaModel(req: NextApiRequest, res: N
     return res.status(404).end();
   }
 
-  // get db model
-  const model = modelMap.get(table)?.filter((_k) => !_k.isGenerated);
   // get db operations (findFirst, findMany, create, update, delete...)
   const _operations = dmmf.mappings.modelOperations.find((_m) => getDatabaseName(_m.model) === table);
   const operations = Object.keys(_operations || {}).filter((_k) => !["model", "plural"].includes(_k));
@@ -49,8 +47,6 @@ export default async function makeAPIFromPrismaModel(req: NextApiRequest, res: N
   if (!operations.includes(action)) {
     return res.status(404).end();
   }
-
-  console.log(model);
 
   // do some logic with action
   switch (action) {
@@ -121,6 +117,4 @@ export default async function makeAPIFromPrismaModel(req: NextApiRequest, res: N
       return res.status(405).end();
     }
   }
-
-  return res.status(200).end("Hello SCVSoft!!!");
 }
