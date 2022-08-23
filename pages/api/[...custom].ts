@@ -52,55 +52,72 @@ export default async function makeAPIFromPrismaModel(req: NextApiRequest, res: N
 
   console.log(model);
 
+  const pk = model!.find((f) => f.isId)?.name;
+
   // do some logic with action
   switch (action) {
     // create action, must have data field
     case "create": {
-      if (!target) return res.status(404).end();
       if (req.method !== "POST") return res.status(405).end();
 
-      return res.status(201).end("create");
+      // @ts-ignore
+      const response = await prisma[table][action](req.body);
+      return res.status(200).json(response);
     }
     // find one Action, must have where field
     case "findUnique":
     case "findFirst": {
       if (!target) return res.status(404).end();
-      if (req.method !== "GET") return res.status(405).end();
+      if (req.method !== "POST") return res.status(405).end();
 
-      return res.status(200).end("find");
+      // @ts-ignore
+      const response = await prisma[table][action](req.body);
+      return res.status(200).json(response);
     }
     // update action, must have where and data field
     case "update": {
       if (!target) return res.status(404).end();
       if (req.method !== "PUT") return res.status(405).end();
 
-      return res.status(201).end("update");
+      // @ts-ignore
+      const response = await prisma[table][action]();
+      return res.status(201).json(response);
     }
     case "delete": {
       if (!target) return res.status(404).end();
       if (req.method !== "DELETE") return res.status(405).end();
 
-      return res.status(201).end("delete");
+      // @ts-ignore
+      const response = await prisma[table][action](req.body);
+      return res.status(200).json(response);
     }
     case "createMany": {
       if (req.method !== "POST") return res.status(405).end();
 
-      return res.status(201).end("create");
+      // @ts-ignore
+      const response = await prisma[table][action](req.body);
+      return res.status(201).json(response);
     }
     case "findMany": {
-      if (req.method !== "GET") return res.status(405).end();
+      if (req.method !== "POST") return res.status(405).end();
 
-      return res.status(200).end("findMany");
+      // @ts-ignore
+      const response = await prisma[table][action](req.body);
+      return res.status(201).json(response);
     }
     case "updateMany": {
       if (req.method !== "PUT") return res.status(405).end();
 
-      return res.status(200).end("update");
+      // @ts-ignore
+      const response = await prisma[table][action](req.body);
+      return res.status(200).json(response);
     }
     case "deleteMany": {
       if (req.method !== "DELETE") return res.status(405).end();
 
-      return res.status(200).end("delete");
+      // @ts-ignore
+      const response = await prisma[table][action](req.body);
+      return res.status(200).json(response);
     }
     default: {
       return res.status(405).end();
