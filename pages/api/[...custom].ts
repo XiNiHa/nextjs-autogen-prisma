@@ -28,8 +28,7 @@ export default async function makeAPIFromPrismaModel(req: NextApiRequest, res: N
 
   // table : database table name
   // action : findFirst, findMany, create, update, delete...
-  // target : nullable, target to action (example: tokenId)
-  const [table, action, target] = req.query.custom as [string, Action, string?];
+  const [table, action] = req.query.custom as [string, Action];
 
   // read prisma model
   const modelMap = new Map(dmmf.datamodel.models.map(({ name, fields }) => [getDatabaseName(name), fields]));
