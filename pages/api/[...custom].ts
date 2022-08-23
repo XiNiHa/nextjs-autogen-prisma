@@ -52,8 +52,6 @@ export default async function makeAPIFromPrismaModel(req: NextApiRequest, res: N
 
   console.log(model);
 
-  const pk = model!.find((f) => f.isId)?.name;
-
   // do some logic with action
   switch (action) {
     // create action, must have data field
