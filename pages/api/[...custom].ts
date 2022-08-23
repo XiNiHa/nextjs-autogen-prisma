@@ -2,10 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 import { DMMFClass } from "@prisma/client/runtime";
 import { Method } from "axios";
-
-function getDatabaseName(name: string) {
-  return `${name[0].toLowerCase()}${name.slice(1)}`;
-}
+import { getDatabaseName } from "utils";
 
 type Action =
   | "findUnique"
