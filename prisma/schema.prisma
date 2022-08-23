@@ -11,8 +11,15 @@ datasource db {
 }
 
 model Test {
-  id       Int @id @default(autoincrement())
+  id       Int    @id @default(autoincrement())
   name     String
   email    String
   password String
+}
+
+model AnotherTest {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime
+  deletedAt DateTime
 }

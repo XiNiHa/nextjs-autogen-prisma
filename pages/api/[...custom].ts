@@ -1,58 +1,38 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { PrismaClient } from "@prisma/client";
-import { DMMFClass } from "@prisma/client/runtime";
+import { PrismaClient, Prisma } from "@prisma/client";
 import { Method } from "axios";
 
 function getDatabaseName(name: string) {
   return `${name[0].toLowerCase()}${name.slice(1)}`;
 }
 
-type Action =
-  | "findUnique"
-  | "findFirst"
-  | "findMany"
-  | "create"
-  | "createMany"
-  | "delete"
-  | "update"
-  | "deleteMany"
-  | "updateMany"
-  | "upsert"
-  | "aggregate"
-  | "groupBy";
+const Tables = Object.values(Prisma.ModelName).map(getDatabaseName);
+type Tables = Uncapitalize<Prisma.ModelName>;
+type NonRawAction<T extends string> = T extends `${string}Raw` ? never : T;
+type Action = Prisma.PrismaAction extends Prisma.PrismaAction ? NonRawAction<Prisma.PrismaAction> : never;
 
 export default async function makeAPIFromPrismaModel(req: NextApiRequest, res: NextApiResponse) {
   const prisma = new PrismaClient();
-  // read prisma DMMF
-  const dmmf = (prisma as any)._baseDmmf as DMMFClass;
 
   // table : database table name
   // action : findFirst, findMany, create, update, delete...
-  const [table, action] = req.query.custom as [string, Action];
+  const [table, action] = req.query.custom as [Tables, Action];
 
-  // read prisma model
-  const modelMap = new Map(dmmf.datamodel.models.map(({ name, fields }) => [getDatabaseName(name), fields]));
-
-  // if model or operations is not found, return 404
-  if (!modelMap.has(table)) {
-    console.log(`got ${table}, model: ${!!modelMap.has(table)}`);
+  // if the requested table is not found, return 404
+  if (!Tables.includes(table)) {
+    console.log(`got ${table}, possible options: ${Tables.join(",")}`);
     return res.status(404).end();
   }
-
-  // get db operations (findFirst, findMany, create, update, delete...)
-  const _operations = dmmf.mappings.modelOperations.find((_m) => getDatabaseName(_m.model) === table);
-  const operations = Object.keys(_operations || {}).filter((_k) => !["model", "plural"].includes(_k));
 
   // if not valid action, just return 404
-  if (!operations.includes(action)) {
+  if (!Object.keys(prisma[table]).includes(action)) {
     return res.status(404).end();
   }
 
-  function query(method: Method, status: 200 | 201 | 202 | 203 | 204 | 205 | 206) {
+  async function query(method: Method, status: 200 | 201 | 202 | 203 | 204 | 205 | 206) {
     if (req.method !== method) return res.status(405).end();
-
-    // @ts-ignore
-    const response = await prisma[table][response](req.body);
+    const actionFn: (p: any) => any = prisma[table][action];
+    const response = await actionFn(req.body);
     return res.status(status).json(response);
   }
 
