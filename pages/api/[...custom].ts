@@ -1,10 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient, Prisma } from "@prisma/client";
 import { Method } from "axios";
-
-function getDatabaseName(name: string) {
-  return `${name[0].toLowerCase()}${name.slice(1)}`;
-}
+import { getDatabaseName } from "utils";
 
 const Tables = Object.values(Prisma.ModelName).map(getDatabaseName);
 type Tables = Uncapitalize<Prisma.ModelName>;
@@ -40,32 +37,32 @@ export default async function makeAPIFromPrismaModel(req: NextApiRequest, res: N
   switch (action) {
     // create action, must have data field
     case "create":
-      return query("POST", 201);
+      return await query("POST", 201);
     // find one Action, must have where field
     case "findUnique":
     case "findFirst":
-      return query("POST", 200);
+      return await query("POST", 200);
     // update action, must have where and data field
     case "update":
-      return query("PUT", 205);
+      return await query("PUT", 205);
     // delete action, must have where field
     case "delete":
-      return query("DELETE", 204);
+      return await query("DELETE", 204);
 
     // --- many action ---
 
     // create many action, data must be array
     case "createMany":
-      return query("POST", 201);
+      return await query("POST", 201);
     // findmany action, must have where field
     case "findMany":
-      return query("POST", 200);
+      return await query("POST", 200);
     // deletemany action, must have where, data field
     case "updateMany":
-      return query("PUT", 205);
+      return await query("PUT", 205);
     // deletemany action, must have where, data field
     case "deleteMany":
-      return query("DELETE", 204);
+      return await query("DELETE", 204);
     default: {
       return res.status(405).end();
     }
